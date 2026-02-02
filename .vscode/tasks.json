@@ -1,0 +1,69 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Test: pytest (all)",
+      "type": "shell",
+      "command": "\"${workspaceFolder}/.venv/bin/python\"",
+      "args": ["-m", "pytest"],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "Test: pytest (fast)",
+      "type": "shell",
+      "command": "\"${workspaceFolder}/.venv/bin/python\"",
+      "args": ["-m", "pytest", "-q"],
+      "group": "test",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "Preview: sources (real web)",
+      "type": "shell",
+      "command": "\"${workspaceFolder}/.venv/bin/python\"",
+      "args": [
+        "scripts/preview_sources.py",
+        "--investments",
+        "--events",
+        "--days-back",
+        "7",
+        "--days-ahead",
+        "90",
+        "--max-items",
+        "10",
+        "--show-invalid"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
+      "label": "Build: email draft (HTML + .eml)",
+      "type": "shell",
+      "command": "\"${workspaceFolder}/.venv/bin/python\"",
+      "args": ["scripts/export_email_draft.py"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    }
+  ]
+}

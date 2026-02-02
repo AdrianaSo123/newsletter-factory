@@ -1,0 +1,63 @@
+# Requirements for the Newsletter Factory
+
+# ============================================================================
+# WEB SCRAPING & DATA COLLECTION (Required)
+# ============================================================================
+requests>=2.31.0              # HTTP requests
+beautifulsoup4>=4.12.0        # HTML parsing
+lxml>=4.9.0                   # Fast XML/HTML parser
+selenium>=4.15.0              # Dynamic content scraping
+playwright>=1.40.0            # Modern web automation (alternative to Selenium)
+feedparser>=6.0.10            # RSS feed parsing
+scrapy>=2.11.0                # Advanced web scraping framework
+
+# ============================================================================
+# DATA PROCESSING & STORAGE
+# ============================================================================
+pandas>=2.0.0                 # Data manipulation
+python-dateutil>=2.8.2        # Date parsing
+pytz>=2023.3                  # Timezone handling
+redis>=5.0.0                  # Caching layer
+sqlalchemy>=2.0.0             # Database ORM
+alembic>=1.12.0               # Database migrations
+
+# ============================================================================
+# RATE LIMITING & POLITENESS
+# ============================================================================
+ratelimit>=2.2.1              # Rate limiting
+python-dotenv>=1.0.0          # Environment variable management
+fake-useragent>=1.4.0         # Randomize user agents
+
+# ============================================================================
+# AI & NLP (for content analysis)
+# ============================================================================
+openai>=1.6.0                 # OpenAI API for content generation
+anthropic>=0.8.0              # Claude API (alternative)
+nltk>=3.8.0                   # Natural language processing
+spacy>=3.7.0                  # Advanced NLP
+
+# ============================================================================
+# OUTPUT & DISTRIBUTION
+# ============================================================================
+markdown>=3.5.0               # Markdown rendering
+jinja2>=3.1.2                 # Template engine
+reportlab>=4.0.0              # PDF generation
+sendgrid>=6.11.0              # Email distribution
+python-telegram-bot>=20.7     # Telegram distribution
+
+# ============================================================================
+# UTILITIES
+# ============================================================================
+python-json-logger>=2.0.7     # Structured logging
+pydantic>=2.5.0               # Data validation
+tenacity>=8.2.3               # Retry logic
+aiohttp>=3.9.0                # Async HTTP requests
+
+# ============================================================================
+# DEVELOPMENT
+# ============================================================================
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+mypy>=1.5.0
+flake8>=6.1.0

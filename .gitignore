@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtualenv
+.venv/
+
+# Runtime/cache artifacts
+cache/
+
+# Generated newsletter outputs
+*.eml
+*.html
+ai_newsletter_real_data.md
+preview_events.json

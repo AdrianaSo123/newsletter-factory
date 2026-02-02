@@ -6,6 +6,7 @@ import time
 import hashlib
 import json
 import logging
+import re
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
@@ -46,6 +47,9 @@ class ScraperConfig:
 
 class CacheManager:
     """Manages cached scraper data"""
+
+    _GOOGLE_API_KEY_RE = re.compile(r"AIza[0-9A-Za-z_\-]{20,}")
+    _SENSITIVE_KEY_RE = re.compile(r"(api[_-]?key|token|secret|bearer)", re.IGNORECASE)
     
     def __init__(self, cache_dir: Path = ScraperConfig.CACHE_DIR):
         self.cache_dir = cache_dir
@@ -61,6 +65,25 @@ class CacheManager:
     def _get_cache_path(self, cache_key: str) -> Path:
         """Get path for cache file"""
         return self.cache_dir / f"{cache_key}.json"
+
+    def _redact_secrets(self, value: Any) -> Any:
+        """Best-effort redaction for secrets that can appear in scraped pages."""
+        if isinstance(value, str):
+            return self._GOOGLE_API_KEY_RE.sub("[REDACTED]", value)
+
+        if isinstance(value, list):
+            return [self._redact_secrets(v) for v in value]
+
+        if isinstance(value, dict):
+            redacted: Dict[Any, Any] = {}
+            for k, v in value.items():
+                if isinstance(k, str) and self._SENSITIVE_KEY_RE.search(k):
+                    redacted[k] = "[REDACTED]"
+                else:
+                    redacted[k] = self._redact_secrets(v)
+            return redacted
+
+        return value
     
     def get(self, url: str, params: Optional[Dict] = None, 
             max_age_hours: int = ScraperConfig.CACHE_EXPIRY_HOURS) -> Optional[Dict]:
@@ -100,7 +123,7 @@ class CacheManager:
                 'timestamp': datetime.now().isoformat(),
                 'url': url,
                 'params': params,
-                'data': data
+                'data': self._redact_secrets(data)
             }
             
             with open(cache_path, 'w') as f:

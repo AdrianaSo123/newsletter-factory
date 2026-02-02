@@ -3,7 +3,29 @@ Content generators for entrepreneurship guidance
 """
 
 from typing import List
-from models import EntrepreneurTip, MarketTrend, Investment
+from models import EntrepreneurTip, MarketTrend, Investment, FactSource
+
+
+def _dedupe_sources(sources: List[FactSource], *, limit: int = 5) -> List[FactSource]:
+    """Dedupe sources conservatively to keep newsletters readable."""
+    out: List[FactSource] = []
+    seen = set()
+    for s in sources or []:
+        key = (getattr(s, "source_name", None), getattr(s, "url", None), getattr(s, "evidence_quote", None))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(s)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _sources_from_investments(investments: List[Investment], *, limit: int = 5) -> List[FactSource]:
+    sources: List[FactSource] = []
+    for inv in investments or []:
+        sources.extend(list(getattr(inv, "sources", []) or []))
+    return _dedupe_sources(sources, limit=limit)
 
 
 class EntrepreneurshipContentGenerator:
@@ -27,6 +49,7 @@ class EntrepreneurshipContentGenerator:
         # Generate sector-specific tip
         if sectors:
             hot_sector = max(sectors, key=sectors.get)
+            sector_investments = [inv for inv in investments if getattr(getattr(inv, "investee", None), "sector", None) == hot_sector]
             tips.append(EntrepreneurTip(
                 title=f"Focus on {hot_sector}",
                 description=f"This sector received the most funding this period with {sectors[hot_sector]} deals. "
@@ -42,7 +65,8 @@ class EntrepreneurshipContentGenerator:
                     f"Papers with Code - Latest {hot_sector} research",
                     "Y Combinator Startup School",
                     "AI-focused Discord/Slack communities"
-                ]
+                ],
+                sources=_sources_from_investments(sector_investments, limit=4),
             ))
         
         # Add funding stage insights
@@ -60,7 +84,10 @@ class EntrepreneurshipContentGenerator:
                 "NFX Signal - Investor database",
                 "First Round Review - Startup guides",
                 "Crunchbase - Track investors and deals"
-            ]
+            ],
+            # This is guidance; not all points are empirical claims. Still attach sources
+            # from the current investment set for context.
+            sources=_sources_from_investments(investments, limit=2),
         ))
         
         # Product development tip
@@ -79,7 +106,8 @@ class EntrepreneurshipContentGenerator:
                 "The Mom Test - Customer interview guide",
                 "Superhuman's Framework for Product-Market Fit",
                 "OpenAI/Anthropic API documentation"
-            ]
+            ],
+            sources=_sources_from_investments(investments, limit=2),
         ))
         
         # Talent tip
@@ -97,7 +125,8 @@ class EntrepreneurshipContentGenerator:
                 "HuggingFace Jobs Board",
                 "AI-focused recruiter networks",
                 "Technical blog platforms (Medium, Dev.to)"
-            ]
+            ],
+            sources=_sources_from_investments(investments, limit=2),
         ))
         
         # Market entry tip
@@ -115,7 +144,8 @@ class EntrepreneurshipContentGenerator:
                 "Lenny's Newsletter - Growth strategies",
                 "Developer Marketing Alliance",
                 "AI product community newsletters"
-            ]
+            ],
+            sources=_sources_from_investments(investments, limit=2),
         ))
         
         return tips
@@ -146,7 +176,8 @@ class EntrepreneurshipContentGenerator:
                 "Enterprise AI adoption accelerating",
                 "Developer tools and infrastructure in demand",
                 "Vertical-specific AI solutions gaining traction"
-            ]
+            ],
+            sources=_sources_from_investments(investments, limit=5),
         ))
         
         # Trend 2: Open source
@@ -160,6 +191,14 @@ class EntrepreneurshipContentGenerator:
         )
         
         if open_source_count > 0:
+            open_source_investments = [
+                inv
+                for inv in investments
+                if (
+                    'open' in (inv.investee.description or '').lower()
+                    or (inv.details is not None and 'open' in inv.details.lower())
+                )
+            ]
             trends.append(MarketTrend(
                 trend_name="Open Source AI Models Rising",
                 description="Open-source AI is attracting significant capital as companies seek alternatives "
@@ -170,12 +209,14 @@ class EntrepreneurshipContentGenerator:
                     "Build on open models with domain-specific fine-tuning",
                     "Create tools for model deployment and optimization",
                     "Offer services around open-source model customization"
-                ]
+                ],
+                sources=_sources_from_investments(open_source_investments, limit=4),
             ))
         
         # Trend 3: Sector-specific insights
         if sector_funding:
             top_sector = max(sector_funding, key=sector_funding.get)
+            top_sector_investments = [inv for inv in investments if getattr(getattr(inv, "investee", None), "sector", None) == top_sector]
             trends.append(MarketTrend(
                 trend_name=f"{top_sector} Leading Investment Activity",
                 description=f"{top_sector} companies captured ${sector_funding[top_sector]:.1f}M in funding, "
@@ -186,7 +227,8 @@ class EntrepreneurshipContentGenerator:
                     f"Solve niche problems within {top_sector}",
                     "Build complementary tools and infrastructure",
                     "Target underserved customer segments"
-                ]
+                ],
+                sources=_sources_from_investments(top_sector_investments, limit=4),
             ))
         
         return trends

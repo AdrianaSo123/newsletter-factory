@@ -63,6 +63,8 @@ class EntrepreneurTip:
     category: str  # e.g., "Funding", "Product", "Talent", "Market"
     action_items: List[str] = field(default_factory=list)
     resources: List[str] = field(default_factory=list)
+    # Optional grounding: sources from the investments/events that motivated this tip.
+    sources: List[FactSource] = field(default_factory=list)
 
 
 @dataclass
@@ -73,4 +75,6 @@ class MarketTrend:
     impact_level: str  # "High", "Medium", "Low"
     relevant_sectors: List[str] = field(default_factory=list)
     opportunity_areas: List[str] = field(default_factory=list)
+    # Optional grounding: sources from the underlying investments.
+    sources: List[FactSource] = field(default_factory=list)
 

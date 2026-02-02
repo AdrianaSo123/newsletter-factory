@@ -81,6 +81,18 @@ class MarketTrendsSection(NewsletterSection):
                 for area in trend.opportunity_areas:
                     content.append(f"- {area}")
                 content.append("")
+
+            # Optional evidence/grounding
+            sources = getattr(trend, "sources", []) or []
+            if sources:
+                src = sources[0]
+                if getattr(src, "evidence_quote", None):
+                    content.append(f"- **Evidence:** \"{src.evidence_quote}\"")
+                if getattr(src, "url", None):
+                    content.append(f"- **Source:** {src.source_name} — {src.url}")
+                else:
+                    content.append(f"- **Source:** {src.source_name}")
+                content.append("")
         
         return "\n".join(content)
 
@@ -120,6 +132,18 @@ class EntrepreneurGuidanceSection(NewsletterSection):
                     content.append("*Resources:*")
                     for resource in tip.resources:
                         content.append(f"- {resource}")
+                    content.append("")
+
+                sources = getattr(tip, "sources", []) or []
+                if sources:
+                    src = sources[0]
+                    content.append("*Evidence:*" )
+                    if getattr(src, "evidence_quote", None):
+                        content.append(f"- \"{src.evidence_quote}\"")
+                    if getattr(src, "url", None):
+                        content.append(f"- {src.source_name} — {src.url}")
+                    else:
+                        content.append(f"- {src.source_name}")
                     content.append("")
         
         return "\n".join(content)

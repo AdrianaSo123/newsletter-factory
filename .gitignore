@@ -14,3 +14,12 @@ cache/
 *.html
 ai_newsletter_real_data.md
 preview_events.json
+
+# macOS
+.DS_Store
+
+# Frontend (newsletter-ui)
+newsletter-ui/node_modules/
+newsletter-ui/dist/
+newsletter-ui/.env
+newsletter-ui/.env.*
